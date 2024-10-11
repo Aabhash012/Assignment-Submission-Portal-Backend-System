@@ -1,0 +1,54 @@
+type Query {
+    getAllAssignmentsForAnAdmin(adminId: ID!): [AssignmentDetailsForAnAdmin]
+    getAllAdmins: [AdminDetails!]!
+    login(userMail: String!, password: String!): String  # Returns a JWT token for users
+
+}
+
+type Mutation {
+    registerUser(userMail: String!, password: String!): UserDetailsEntity!
+    registerAdmin(userMail: String!, password: String!): UserDetailsEntity!
+    uploadAssignment(userId: ID!, task: String!, adminId: ID!): AssignmentDetailsForAnAdmin!
+    acceptAssignment(assignmentId: ID!): AssignmentStatusResponse!
+    rejectAssignment(assignmentId: ID!): AssignmentStatusResponse!
+}
+
+type UserDetailsEntity {
+    id: ID!
+    userMail:String!
+    role: UserRole!
+}
+
+type AdminDetails {
+    id: ID!
+    userMail:String!
+}
+
+type AssignmentDetailsForAnAdmin {
+    assignmentId: ID
+    userId: ID
+    task: String
+    submittedAt: String
+    status: AssignmentStatusEnum
+}
+type  UploadedAssignmentResponse{
+    assignmentId: ID!
+    status: AssignmentStatusEnum!
+    adminId:ID!
+    submittedAt: String!
+}
+type AssignmentStatusResponse {
+    assignmentId: ID!
+    status: AssignmentStatusEnum!
+    message: String
+}
+
+enum AssignmentStatusEnum{
+    PENDING
+    ACCEPTED
+    REJECTED
+}
+enum UserRole {
+    USER
+    ADMIN
+}
