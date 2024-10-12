@@ -1,6 +1,7 @@
 package com.assignment.portal.model;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class UserDetailsEntity implements UserDetails {
+    @Id
     private UUID id;
     private String userMail;
     private String password;

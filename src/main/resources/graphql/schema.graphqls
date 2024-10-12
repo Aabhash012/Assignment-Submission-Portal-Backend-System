@@ -16,6 +16,7 @@ type Mutation {
 type UserDetailsEntity {
     id: ID!
     userMail:String!
+    password:String!
     role: UserRole!
 }
 
