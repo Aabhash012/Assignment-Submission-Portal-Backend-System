@@ -65,6 +65,6 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     public byte[] getContentAsByteArray() {
-        return this.cachedBody; // New method to get the cached body as a byte array
+        return this.cachedBody;
     }
 }
