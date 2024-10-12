@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.Filter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -29,10 +30,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        CachedBodyHttpServletRequest cachedBodyRequest = new CachedBodyHttpServletRequest(request);
         String requestURI = request.getRequestURI();
+        logger.debug("Request URI: {}"+ requestURI);
 
-        if (requestURI.equals("/graphql") && isPublicGraphqlOperation(request)) {
-            filterChain.doFilter(request, response);  // Skip JWT authentication for public GraphQL operations
+        if (requestURI.equals("/graphql") && isPublicGraphqlOperation(cachedBodyRequest)) {
+            logger.debug("Public GraphQL operation detected. Skipping authentication.");
+            filterChain.doFilter(cachedBodyRequest, response);  // Skip JWT authentication for public GraphQL operations
             return;
         }
 //        String authorizationHeader = request.getHeader("Authorization");
@@ -63,7 +67,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 //
 //        // Continue with the next filter in the chain
 //        filterChain.doFilter(request, response);
-        HttpServletRequest cachedBodyRequest = new CachedBodyHttpServletRequest(request);
+        //HttpServletRequest cachedBodyRequest = new CachedBodyHttpServletRequest(request);
 
         String authorizationHeader = cachedBodyRequest.getHeader("Authorization");
 
@@ -78,22 +82,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    logger.debug("User authenticated: {}"+ userMail);
+                }
+                else {
+                    logger.warn("Invalid JWT token for user: {}"+ userMail); // Log token validation failure
                 }
             }
+        }else {
+            logger.warn("Authorization header is missing or malformed"); // Log missing header
         }
+
         // Pass the wrapped request to the next filter in the chain
         filterChain.doFilter(cachedBodyRequest, response);
     }
-    private boolean isPublicGraphqlOperation(HttpServletRequest request) {
-        try {
-            String requestBody = request.getReader().lines().collect(Collectors.joining());
-            if (requestBody.contains("registerUser") || requestBody.contains("registerAdmin")) {
-                return true; // These operations should bypass authentication
-            }
-        } catch (IOException e) {
-            logger.error("Error reading request body", e);
-        }
-        return false;
+    private boolean isPublicGraphqlOperation(CachedBodyHttpServletRequest request) {
+        String requestBody = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
+        logger.debug("Request Body: {}"+ requestBody);
+        return requestBody.contains("registerUser") || requestBody.contains("registerAdmin");
     }
 }
 

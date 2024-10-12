@@ -4,6 +4,7 @@ import com.assignment.portal.model.AssignmentDetailsForAnAdmin;
 import com.assignment.portal.model.AssignmentStatusEnum;
 import com.assignment.portal.model.AssignmentStatusResponse;
 import com.assignment.portal.repository.AssignmentRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +25,16 @@ public class AssignmentService {
     /**
      * Uploads a new assignment and saves it to MongoDB.
      */
-    public AssignmentDetailsForAnAdmin uploadAssignment(AssignmentDetailsForAnAdmin assignment) {
-        assignment.setSubmittedAt(LocalDateTime.now()); // Set the current time as submission time.
-        assignment.setStatus(AssignmentStatusEnum.PENDING); // Set the initial status as PENDING.
-        return assignmentRepository.save(assignment); // Save to the database.
+    public AssignmentDetailsForAnAdmin uploadAssignment(UUID userId,UUID adminId,String task) {
+        AssignmentDetailsForAnAdmin assignmentDetails = AssignmentDetailsForAnAdmin.builder()
+                .assignmentId(UUID.randomUUID())
+                .status(AssignmentStatusEnum.PENDING)
+                .submittedAt(LocalDateTime.now())
+                .userId(userId)
+                .adminId(adminId)
+                .task(task)
+                .build();
+        return assignmentRepository.save(assignmentDetails); // Save to the database.
     }
 
     /**
@@ -41,7 +48,7 @@ public class AssignmentService {
      * Updates the status of an assignment (e.g., ACCEPTED or REJECTED).
      */
     public AssignmentStatusResponse updateAssignmentStatus(UUID assignmentId, AssignmentStatusEnum status) {
-        AssignmentDetailsForAnAdmin assignment = assignmentRepository.findById(assignmentId)
+        AssignmentDetailsForAnAdmin assignment = assignmentRepository.findByAssignmentId(assignmentId)
                 .orElseThrow(() -> new RuntimeException("Assignment not found"));
 
         // Update the status and save the assignment back to the database.

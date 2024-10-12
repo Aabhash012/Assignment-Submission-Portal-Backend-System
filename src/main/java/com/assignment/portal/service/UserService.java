@@ -1,11 +1,13 @@
 package com.assignment.portal.service;
 
+import com.assignment.portal.exception.UserAlreadyExistsException;
 import com.assignment.portal.model.AdminDetails;
 import com.assignment.portal.model.UserDetailsEntity;
 import com.assignment.portal.model.UserRole;
 import com.assignment.portal.repository.UserRepository;
 import com.assignment.portal.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @Service
 public class UserService implements UserDetailsService {
     private final JwtUtil jwtUtil;
-    private UserRepository userRepository; // Interacts with the user repository.
+    @Autowired private UserRepository userRepository; // Interacts with the user repository.
     private PasswordEncoder passwordEncoder; // For encrypting passwords before saving them.
 
     @Autowired
@@ -36,7 +38,7 @@ public class UserService implements UserDetailsService {
      */
     public UserDetailsEntity register(UserDetailsEntity user) {
         if (userRepository.findByUserMail(user.getUserMail()).isPresent()) {
-         throw new RuntimeException("User already exists.");
+            throw new UserAlreadyExistsException("User already exists with email: " + user.getUserMail());
        }
         // Encrypt the user's password before saving.
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -46,6 +48,7 @@ public class UserService implements UserDetailsService {
     /**
      * Attempts to log in a user by matching their username and password.
      */
+
     public String login(String userMail, String password) {
         Optional<UserDetailsEntity> optionalUser = userRepository.findByUserMail(userMail);
         if (optionalUser.isPresent()) {

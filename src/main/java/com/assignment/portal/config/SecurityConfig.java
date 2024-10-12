@@ -23,13 +23,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig implements WebMvcConfigurer {
-    @Autowired
-    private JwtUtil jwtUtil; // Your JWT utility class
+    private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+
     @Autowired
-    public SecurityConfig(@Lazy UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtUtil jwtUtil, @Lazy UserDetailsService userDetailsService) {
+        this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
     @Bean
@@ -46,6 +47,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers(HttpMethod.POST, "/graphql/registerUser", "/graphql/registerAdmin").permitAll()// Use requestMatchers instead of antMatchers
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/graphql").permitAll()
+                        //.requestMatchers(HttpMethod.POST,"/graphql/login").permitAll()
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the username-password auth filter
