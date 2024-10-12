@@ -1,6 +1,7 @@
 package com.assignment.portal.service;
 
 import com.assignment.portal.exception.UserAlreadyExistsException;
+import com.assignment.portal.exception.UserNotFoundException;
 import com.assignment.portal.model.AdminDetails;
 import com.assignment.portal.model.UserDetailsEntity;
 import com.assignment.portal.model.UserRole;
@@ -44,10 +45,10 @@ public class UserService implements UserDetailsService {
             if (passwordEncoder.matches(password, user.getPassword())) {
                 return  jwtUtil.generateToken(user);
             } else {
-                throw new RuntimeException("Invalid credentials");
+                throw new RuntimeException("Password Incorrect");
             }
         } else {
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found with email: "+userMail);
         }
     }
     public List<AdminDetails> getAllAdmins(){
