@@ -69,9 +69,4 @@ public class AssignmentResolver {
             return assignmentService.updateAssignmentStatus(assignmentId, AssignmentStatusEnum.REJECTED);
         };
     }
-
-    @PreAuthorize("isAuthenticated()")
-    public DataFetcher<List<AdminDetails>> getAllAdmins() {
-        return dataFetchingEnvironment -> userService.getAllAdmins();
-    }
 }

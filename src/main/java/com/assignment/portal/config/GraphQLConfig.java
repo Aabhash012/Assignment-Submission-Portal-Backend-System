@@ -15,7 +15,7 @@ public class GraphQLConfig {
         return wiringBuilder -> wiringBuilder
                 .type("Query", typeWiring -> typeWiring
                         .dataFetcher("getAllAssignmentsForAnAdmin", assignmentResolver.getAllAssignmentsForAnAdmin())
-                        .dataFetcher("getAllAdmins", assignmentResolver.getAllAdmins())
+                        .dataFetcher("getAllAdmins",userResolver.getAllAdmins())
                         .dataFetcher("login", userResolver.login()))
                 .type("Mutation", typeWiring -> typeWiring
                         .dataFetcher("registerUser", userResolver.registerUser())
