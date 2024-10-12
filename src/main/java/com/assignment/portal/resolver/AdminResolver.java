@@ -27,14 +27,6 @@ public class AdminResolver {
             return userService.register(adminDetails);
         };
     }
-
-    public DataFetcher<String> login() {
-        return dataFetchingEnvironment -> {
-            String userMail = dataFetchingEnvironment.getArgument("userMail");
-            String password = dataFetchingEnvironment.getArgument("password");
-            return userService.login(userMail, password);
-        };
-    }
 }
 
 
