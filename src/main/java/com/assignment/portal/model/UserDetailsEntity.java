@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Document(collection = "users")
@@ -34,27 +33,27 @@ public class UserDetailsEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.userMail; // Assuming email is used as username
+        return this.userMail;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // You can add your own logic here
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // You can add your own logic here
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // You can add your own logic here
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // You can add your own logic here
+        return true;
     }
 }
 

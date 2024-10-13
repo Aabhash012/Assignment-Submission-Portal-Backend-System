@@ -1,31 +1,41 @@
 package com.assignment.portal.service;
 
-import com.assignment.portal.model.AssignmentDetailsForAnAdmin;
-import com.assignment.portal.model.AssignmentStatusEnum;
-import com.assignment.portal.model.AssignmentStatusResponse;
+import com.assignment.portal.exception.AdminNotFoundException;
+import com.assignment.portal.exception.AssignmentNotFoundException;
+import com.assignment.portal.exception.InvalidRoleException;
+import com.assignment.portal.exception.UserNotFoundException;
+import com.assignment.portal.model.*;
 import com.assignment.portal.repository.AssignmentRepository;
-import org.bson.types.ObjectId;
+import com.assignment.portal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Service class to manage the business logic related to Assignments.
- */
+
 @Service
 public class AssignmentService {
 
     @Autowired
     private AssignmentRepository assignmentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    /**
-     * Uploads a new assignment and saves it to MongoDB.
-     */
     public AssignmentDetailsForAnAdmin uploadAssignment(UUID userId,UUID adminId,String task) {
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException("No user found with ID: " + userId);
+        }
+
+        // Check if the admin exists
+        if (!userRepository.existsById(adminId)) {
+            throw new AdminNotFoundException("No admin found with ID: " + adminId);
+        }
+
+        // check the role corresponding to the adminId given in input
+        if(userRepository.findUserRoleById(adminId).getRole().equals(UserRole.USER)){
+            throw new InvalidRoleException("The provided adminId is associated with a user role");
+        }
         AssignmentDetailsForAnAdmin assignmentDetails = AssignmentDetailsForAnAdmin.builder()
                 .assignmentId(UUID.randomUUID())
                 .status(AssignmentStatusEnum.PENDING)
@@ -34,24 +44,21 @@ public class AssignmentService {
                 .adminId(adminId)
                 .task(task)
                 .build();
-        return assignmentRepository.save(assignmentDetails); // Save to the database.
+        return assignmentRepository.save(assignmentDetails);
     }
 
-    /**
-     * Retrieves all assignments tagged to a specific admin by their adminId.
-     */
     public List<AssignmentDetailsForAnAdmin> getAllAssignmentsForAnAdmin(UUID adminId) {
-        return assignmentRepository.findByAdminId(adminId); // Query database for assignments by adminId.
+        Boolean adminExists = userRepository.existsById(adminId);
+        if (!adminExists) {
+            throw new AdminNotFoundException("No admin found with ID: " + adminId);
+        }
+        return assignmentRepository.findByAdminId(adminId);
     }
 
-    /**
-     * Updates the status of an assignment (e.g., ACCEPTED or REJECTED).
-     */
     public AssignmentStatusResponse updateAssignmentStatus(UUID assignmentId, AssignmentStatusEnum status) {
         AssignmentDetailsForAnAdmin assignment = assignmentRepository.findByAssignmentId(assignmentId)
-                .orElseThrow(() -> new RuntimeException("Assignment not found"));
+                .orElseThrow(() -> new AssignmentNotFoundException("Assignment not found with ID: "+ assignmentId));
 
-        // Update the status and save the assignment back to the database.
         assignment.setStatus(status);
         assignmentRepository.save(assignment);
         String message = status == AssignmentStatusEnum.ACCEPTED ? "Assignment accepted" : "Assignment rejected";

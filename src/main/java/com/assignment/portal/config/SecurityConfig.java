@@ -7,18 +7,15 @@ import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -50,8 +47,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         //.requestMatchers(HttpMethod.POST,"/graphql/login").permitAll()
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the username-password auth filter
-                .build(); // Build the security filter chain
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
@@ -62,19 +59,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-        // Configure your authentication provider if needed
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder.build();
     }
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        // Add CORS mapping for /graphql and allow frontend requests
-//        registry.addMapping("/graphql")
-//                .allowedOriginPatterns("http://localhost:*") // Replace with your frontend URL (use '*' for testing)
-//                .allowedMethods("POST", "OPTIONS")  // Only allow POST and OPTIONS requests
-//                .allowedHeaders("*")  // Allow any headers
-//                .allowCredentials(true);  // Allow credentials (JWT token)
-//    }
 }
 
 

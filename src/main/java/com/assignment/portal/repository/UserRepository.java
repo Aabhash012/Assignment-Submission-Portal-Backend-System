@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends MongoRepository<UserDetailsEntity, UUID> {
     Optional<UserDetailsEntity> findByUserMail(String userMail);
-    //Optional<UserDetails> findByUsernameAndRole(String username, UserRole role);
     List<AdminDetails> findByRole(UserRole role);
+    UserDetailsEntity findUserRoleById(UUID id);
 }
 

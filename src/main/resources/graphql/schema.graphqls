@@ -1,7 +1,7 @@
 type Query {
-    getAllAssignmentsForAnAdmin(adminId: ID!): [AssignmentDetailsForAnAdmin]
+    getAllAssignmentsForAnAdmin(adminId: ID!): [AssignmentDetailsForAnAdmin!]!
     getAllAdmins: [AdminDetails!]!
-    login(userMail: String!, password: String!): String  # Returns a JWT token for users
+    login(userMail: String!, password: String!): String!
 
 }
 
@@ -26,11 +26,11 @@ type AdminDetails {
 }
 
 type AssignmentDetailsForAnAdmin {
-    assignmentId: ID
-    userId: ID
-    task: String
-    submittedAt: String
-    status: AssignmentStatusEnum
+    assignmentId: ID!
+    userId: ID!
+    task: String!
+    submittedAt: String!
+    status: AssignmentStatusEnum!
 }
 type  UploadedAssignmentResponse{
     assignmentId: ID!

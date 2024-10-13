@@ -3,28 +3,12 @@ import com.assignment.portal.model.*;
 import com.assignment.portal.service.AssignmentService;
 import com.assignment.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-//import graphql.kickstart.tools.GraphQLMutationResolver;
-//import graphql.kickstart.tools.GraphQLQueryResolver;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import graphql.schema.DataFetcher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @Component
 public class AssignmentResolver {
@@ -38,8 +22,7 @@ public class AssignmentResolver {
     @PreAuthorize("hasRole('ADMIN')")
     public DataFetcher<List<AssignmentDetailsForAnAdmin>> getAllAssignmentsForAnAdmin() {
         return dataFetchingEnvironment -> {
-            String adminIdString = dataFetchingEnvironment.getArgument("adminId");
-            UUID adminId = UUID.fromString(adminIdString);
+            UUID adminId = UUID.fromString(dataFetchingEnvironment.getArgument("adminId"));
             return assignmentService.getAllAssignmentsForAnAdmin(adminId);
         };
     }

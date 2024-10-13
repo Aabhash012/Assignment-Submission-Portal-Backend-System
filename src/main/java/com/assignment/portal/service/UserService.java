@@ -1,24 +1,21 @@
 package com.assignment.portal.service;
 
 import com.assignment.portal.exception.UserAlreadyExistsException;
+import com.assignment.portal.exception.UserNotFoundException;
 import com.assignment.portal.model.AdminDetails;
 import com.assignment.portal.model.UserDetailsEntity;
 import com.assignment.portal.model.UserRole;
 import com.assignment.portal.repository.UserRepository;
 import com.assignment.portal.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service class to handle business logic related to User management.
- */
+
 @Service
 public class UserService implements UserDetailsService {
     private final JwtUtil jwtUtil;
@@ -32,22 +29,13 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Registers a new user by saving their details to the MongoDB database.
-     * The password is encrypted before saving.
-     */
     public UserDetailsEntity register(UserDetailsEntity user) {
         if (userRepository.findByUserMail(user.getUserMail()).isPresent()) {
             throw new UserAlreadyExistsException("User already exists with email: " + user.getUserMail());
        }
-        // Encrypt the user's password before saving.
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
-
-    /**
-     * Attempts to log in a user by matching their username and password.
-     */
 
     public String login(String userMail, String password) {
         Optional<UserDetailsEntity> optionalUser = userRepository.findByUserMail(userMail);
@@ -57,10 +45,10 @@ public class UserService implements UserDetailsService {
             if (passwordEncoder.matches(password, user.getPassword())) {
                 return  jwtUtil.generateToken(user);
             } else {
-                throw new RuntimeException("Invalid credentials");
+                throw new RuntimeException("Password Incorrect");
             }
         } else {
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found with email: "+userMail);
         }
     }
     public List<AdminDetails> getAllAdmins(){

@@ -3,23 +3,13 @@ import com.assignment.portal.model.AdminDetails;
 import com.assignment.portal.model.UserDetailsEntity;
 import com.assignment.portal.model.UserRole;
 import com.assignment.portal.service.UserService;
-//import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-//import graphql.kickstart.tools.GraphQLMutationResolver;
-
 import java.util.List;
 import java.util.UUID;
-
 import graphql.schema.DataFetcher;
-import org.springframework.stereotype.Component;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
+
 
 @Component
 public class UserResolver {
