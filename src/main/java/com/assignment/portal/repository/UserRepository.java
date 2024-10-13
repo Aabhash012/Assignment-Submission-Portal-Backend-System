@@ -14,5 +14,6 @@ import java.util.UUID;
 public interface UserRepository extends MongoRepository<UserDetailsEntity, UUID> {
     Optional<UserDetailsEntity> findByUserMail(String userMail);
     List<AdminDetails> findByRole(UserRole role);
+    UserDetailsEntity findUserRoleById(UUID id);
 }
 

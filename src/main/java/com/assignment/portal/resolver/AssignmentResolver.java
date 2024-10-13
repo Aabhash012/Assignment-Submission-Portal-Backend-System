@@ -22,8 +22,7 @@ public class AssignmentResolver {
     @PreAuthorize("hasRole('ADMIN')")
     public DataFetcher<List<AssignmentDetailsForAnAdmin>> getAllAssignmentsForAnAdmin() {
         return dataFetchingEnvironment -> {
-            String adminIdString = dataFetchingEnvironment.getArgument("adminId");
-            UUID adminId = UUID.fromString(adminIdString);
+            UUID adminId = UUID.fromString(dataFetchingEnvironment.getArgument("adminId"));
             return assignmentService.getAllAssignmentsForAnAdmin(adminId);
         };
     }

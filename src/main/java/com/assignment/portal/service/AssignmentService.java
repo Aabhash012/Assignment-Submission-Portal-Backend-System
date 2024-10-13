@@ -2,19 +2,16 @@ package com.assignment.portal.service;
 
 import com.assignment.portal.exception.AdminNotFoundException;
 import com.assignment.portal.exception.AssignmentNotFoundException;
+import com.assignment.portal.exception.InvalidRoleException;
 import com.assignment.portal.exception.UserNotFoundException;
 import com.assignment.portal.model.*;
 import com.assignment.portal.repository.AssignmentRepository;
 import com.assignment.portal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
 
 @Service
@@ -33,6 +30,11 @@ public class AssignmentService {
         // Check if the admin exists
         if (!userRepository.existsById(adminId)) {
             throw new AdminNotFoundException("No admin found with ID: " + adminId);
+        }
+
+        // check the role corresponding to the adminId given in input
+        if(userRepository.findUserRoleById(adminId).getRole().equals(UserRole.USER)){
+            throw new InvalidRoleException("The provided adminId is associated with a user role");
         }
         AssignmentDetailsForAnAdmin assignmentDetails = AssignmentDetailsForAnAdmin.builder()
                 .assignmentId(UUID.randomUUID())
